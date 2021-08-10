@@ -1,16 +1,17 @@
 import {
+  Alert,
   Box,
-  Container,
-  Select,
-  FormControl,
-  FormLabel,
-  FormErrorMessage,
-  Input,
   Button,
-  Heading,
+  Container,
+  FormControl,
+  FormErrorMessage,
+  FormLabel,
   Image,
+  Input,
+  Select,
+  AlertIcon,
 } from '@chakra-ui/react';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 
 const initialValue = {
   chain: null,
@@ -26,6 +27,8 @@ export default function Home(props) {
   const [formValues, setFormValues] = useState(initialValue);
   const [formError, setFormError] = useState(initialValue);
   const [apiLoading, setApiLoading] = useState(false);
+  const [apiFeedback, setApiFeedback] = useState({ show: false, isError: false, msg: '' });
+  let countdownTimer = null;
 
   const handleOnChange = ({ target: { name, value } }) => {
     setFormValues((prev) => ({ ...prev, [name]: value }));
@@ -47,22 +50,65 @@ export default function Home(props) {
     }
   };
 
+  const resetApiFeedback = () => {
+    setApiFeedback({ show: false, isError: false, msg: '' });
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log(formValues);
+    resetApiFeedback();
     setApiLoading(true);
+    countdownTimer && clearTimeout(countdownTimer);
 
-    setTimeout(() => setApiLoading(false), 500);
+    // const isInvalidData = Object.values(formError).some((value) => value === true || value === null);
+
+    let isValidData = true;
+    Object.entries(formError).forEach(([key, value]) => {
+      if (value === true || value === null) {
+        isValidData = false;
+        setFormError((prev) => ({ ...prev, [key]: true }));
+      }
+    });
+
+    if (isValidData) {
+      await fetch(`${process.env.HOST}/api/token`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(formValues),
+      })
+        .then((res) => {
+          if (!res.ok) {
+            throw new Error(res.statusText ?? 'Adding tokens failed.');
+          }
+          return res.json();
+        })
+        .then((data) => setApiFeedback({ show: true, isError: false, msg: 'Token successfully added.' }))
+        .catch((err) => setApiFeedback({ show: true, isError: true, msg: err.message ?? 'Adding tokens failed.' }));
+    } else {
+      setApiLoading(false);
+      return;
+    }
+
+    countdownTimer = setTimeout(() => {
+      setApiLoading(false);
+      resetApiFeedback();
+    }, 1000);
   };
+
+  useEffect(() => {
+    return () => {
+      countdownTimer && clearTimeout(countdownTimer);
+    };
+  }, [countdownTimer]);
 
   return (
     <Container centerContent>
-      <Box mt={100}>
+      <Box mt={[5, 100]}>
         <Image src={'/xircus-animated.gif'} width={200} alt='XIRCUS' />
       </Box>
       <Box w={['100%', 400]} p={5} borderWidth='1px' borderRadius='lg'>
         <form>
-          <FormControl id='chain' mb={3}>
+          <FormControl id='chain' mb={3} isInvalid={formError.chain}>
             <FormLabel htmlFor='chain'>BLockchain</FormLabel>
             <Select name='chain' placeholder='Select Chain' onChange={handleOnChange}>
               {chains &&
@@ -73,6 +119,7 @@ export default function Home(props) {
                   </option>
                 ))}
             </Select>
+            <FormErrorMessage>Please select Blockchain.</FormErrorMessage>
           </FormControl>
 
           <FormControl id='name' mb={3} isInvalid={formError.name}>
@@ -90,20 +137,27 @@ export default function Home(props) {
           <FormControl isInvalid={formError.token} id='token' mb={3} isDisabled={true}>
             <FormLabel htmlFor='token'>Token Address:</FormLabel>
             <Input name='token' placeholder='0x00000' maxLength={42} onChange={handleOnChangeTokens} />
-            <FormErrorMessage>Please enter valid token address.</FormErrorMessage>
+            <FormErrorMessage>Invalid token address.</FormErrorMessage>
           </FormControl>
 
           <FormControl isInvalid={formError.stable} id='stable' mb={3} isDisabled={true}>
             <FormLabel htmlFor='stable'>Stable Token Address:</FormLabel>
             <Input name='stable' placeholder='0x00000' maxLength={42} onChange={handleOnChangeTokens} />
-            <FormErrorMessage>Please enter valid token address.</FormErrorMessage>
+            <FormErrorMessage>Invalid token address.</FormErrorMessage>
           </FormControl>
 
           <FormControl isInvalid={formError.router} id='router' mb={3} isDisabled={true}>
             <FormLabel htmlFor='router'>Decentralize Exchange Router Address:</FormLabel>
             <Input name='router' placeholder='0x00000' maxLength={42} onChange={handleOnChangeTokens} />
-            <FormErrorMessage>Please enter valid token address.</FormErrorMessage>
+            <FormErrorMessage>Invalid token address.</FormErrorMessage>
           </FormControl>
+
+          {apiFeedback.show && (
+            <Alert status={apiFeedback.isError ? 'error' : 'success'}>
+              <AlertIcon />
+              {apiFeedback.msg}
+            </Alert>
+          )}
 
           <Button
             mt={3}
