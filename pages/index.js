@@ -107,7 +107,7 @@ export default function Home(props) {
         <Image src={'/xircus-animated.gif'} width={200} alt='XIRCUS' />
       </Box>
       <Box w={['100%', 400]} p={5} borderWidth='1px' borderRadius='lg'>
-        <form>
+        <form onSubmit={handleSubmit}>
           <FormControl id='chain' mb={3} isInvalid={formError.chain}>
             <FormLabel htmlFor='chain'>BLockchain</FormLabel>
             <Select name='chain' placeholder='Select Chain' onChange={handleOnChange}>
@@ -160,6 +160,7 @@ export default function Home(props) {
           )}
 
           <Button
+            type='submit'
             mt={3}
             colorScheme='orange'
             variant='solid'
@@ -167,7 +168,6 @@ export default function Home(props) {
             loadingText='Please wait...'
             spinnerPlacement='start'
             width='full'
-            onClick={handleSubmit}
             bgGradient='linear(to-r, #7928CA, #ffb100)'
             color='white'
           >
