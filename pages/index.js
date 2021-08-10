@@ -126,7 +126,7 @@ export default function Home(props) {
 }
 
 export async function getStaticProps(context) {
-  const res = await fetch(`${process.env.NEXT_PUBLIC_HOST}/chains.json`);
+  const res = await fetch(`${process.env.HOST}/chains.json`);
   const data = await res.json();
 
   if (!data) {
