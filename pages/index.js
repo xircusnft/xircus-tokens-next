@@ -12,6 +12,8 @@ import {
   AlertIcon,
 } from '@chakra-ui/react';
 import { useEffect, useState } from 'react';
+import fs from 'fs/promises';
+import path from 'path';
 
 const initialValue = {
   chain: null,
@@ -180,16 +182,17 @@ export default function Home(props) {
 }
 
 export async function getStaticProps(context) {
-  const res = await fetch(`${process.env.HOST}/chains.json`);
-  const data = await res.json();
+  // const res = await fetch(`${process.env.HOST}/chains.json`);
+  // const data = await res.json();
+  let chains = [];
 
-  if (!data) {
-    return {
-      notFound: true,
-    };
-  }
+  try {
+    const data = await fs.readFile(path.join(process.cwd(), 'public', 'chains.json'));
+    chains = JSON.parse(data);
+    console.log(chains);
+  } catch (error) {}
 
   return {
-    props: { chains: data },
+    props: { chains },
   };
 }
