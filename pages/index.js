@@ -17,6 +17,7 @@ import fs from "fs/promises";
 import path from "path";
 import FormAutoComplete from "../components/FormAutoComplete";
 import getRouterList from "../services/getRouterList";
+import validateToken from "../util/validateToken";
 
 const initialValue = {
   chain: null,
@@ -49,7 +50,7 @@ export default function Home(props) {
   const handleOnChangeTokens = ({ target: { name, value } }) => {
     setFormValues((prev) => ({ ...prev, [name]: value }));
 
-    if (value.startsWith("0x") && value.length == 42) {
+    if (validateToken(value)) {
       setFormError((prev) => ({ ...prev, [name]: false }));
     } else {
       setFormError((prev) => ({ ...prev, [name]: true }));
@@ -75,25 +76,29 @@ export default function Home(props) {
         setFormError((prev) => ({ ...prev, [key]: true }));
       }
     });
-    console.log(process.env.HOST);
-    // if (isValidData) {
-    await fetch(`${process.env.HOST}/api/token`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(formValues),
-    })
-      .then((res) => {
-        if (!res.ok) {
-          throw new Error(res.statusText ?? "Adding tokens failed.");
-        }
-        return res.json();
+
+    if (isValidData) {
+      await fetch(`${process.env.HOST}/api/token`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(formValues),
       })
-      .then((data) => setApiFeedback({ show: true, isError: false, msg: "Token successfully added." }))
-      .catch((err) => setApiFeedback({ show: true, isError: true, msg: err.message ?? "Adding tokens failed." }));
-    // } else {
-    //   setApiLoading(false);
-    //   return;
-    // }
+        .then((res) => {
+          if (!res.ok) {
+            throw res;
+          }
+          return res.json();
+        })
+        .then((data) => setApiFeedback({ show: true, isError: false, msg: "Token successfully added." }))
+        .catch((err) => {
+          const errmsg = err.json().then((er) => {
+            setApiFeedback({ show: true, isError: true, msg: er.message ?? "Adding tokens failed." });
+          });
+        });
+    } else {
+      setApiLoading(false);
+      return;
+    }
 
     countdownTimer = setTimeout(() => {
       setApiLoading(false);
