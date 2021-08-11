@@ -92,6 +92,8 @@ export default function Home(props) {
       });
       const result = await response.json();
 
+      if (response.ok) resetFormValues();
+
       setApiFeedback({ show: true, isError: !response.ok, msg: result.message });
     } else {
       setApiLoading(false);
