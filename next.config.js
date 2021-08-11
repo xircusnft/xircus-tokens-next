@@ -16,7 +16,7 @@ module.exports = (phase, { defaultConfig }) => {
   return {
     reactStrictMode: true,
     env: {
-      HOST: "https://pairs.xircus.app",
+      HOST: "https://xircus-tokens-next.vercel.app",
       ROUTER_EXCHANGE: "https://api.xircus.app/exchanges",
       MONGODB_DB: "tokenlister",
       MONGODB_URI: "mongodb+srv://jmxircus:hamL5J0ZyMDkDgrH@tokenlister.fpl5d.mongodb.net",

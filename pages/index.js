@@ -75,7 +75,7 @@ export default function Home(props) {
         setFormError((prev) => ({ ...prev, [key]: true }));
       }
     });
-
+    console.log(process.env.HOST);
     // if (isValidData) {
     await fetch(`${process.env.HOST}/api/token`, {
       method: "POST",
