@@ -76,24 +76,24 @@ export default function Home(props) {
       }
     });
 
-    if (isValidData) {
-      await fetch(`${process.env.HOST}/api/token`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(formValues),
+    // if (isValidData) {
+    await fetch(`${process.env.HOST}/api/token`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(formValues),
+    })
+      .then((res) => {
+        if (!res.ok) {
+          throw new Error(res.statusText ?? "Adding tokens failed.");
+        }
+        return res.json();
       })
-        .then((res) => {
-          if (!res.ok) {
-            throw new Error(res.statusText ?? "Adding tokens failed.");
-          }
-          return res.json();
-        })
-        .then((data) => setApiFeedback({ show: true, isError: false, msg: "Token successfully added." }))
-        .catch((err) => setApiFeedback({ show: true, isError: true, msg: err.message ?? "Adding tokens failed." }));
-    } else {
-      setApiLoading(false);
-      return;
-    }
+      .then((data) => setApiFeedback({ show: true, isError: false, msg: "Token successfully added." }))
+      .catch((err) => setApiFeedback({ show: true, isError: true, msg: err.message ?? "Adding tokens failed." }));
+    // } else {
+    //   setApiLoading(false);
+    //   return;
+    // }
 
     countdownTimer = setTimeout(() => {
       setApiLoading(false);
@@ -128,10 +128,10 @@ export default function Home(props) {
 
   return (
     <Container centerContent>
-      <Box mt={[5, 100]}>
+      <Box mt={[2, 100]} mb={3}>
         <Image src={"/xircus-animated.gif"} width={200} alt="XIRCUS" />
       </Box>
-      <Box w={["100%", 400]} p={5} borderWidth="1px" borderRadius="lg">
+      <Box w={["100%", 400]} p={5} borderWidth="1px" borderRadius="lg" mb={100}>
         <form onSubmit={handleSubmit} autoComplete="off">
           <FormAutoComplete
             id="chain"
@@ -149,7 +149,7 @@ export default function Home(props) {
 
           <FormControl id="name" mb={3} isInvalid={formError.name}>
             <FormLabel htmlFor="name">Name</FormLabel>
-            <Input name="name" maxLength={255} onChange={handleOnChange} />
+            <Input name="name" maxLength={255} onChange={handleOnChange} placeholder="e.g Market-BUSD PancakeSwap" />
             <FormErrorMessage>Please enter name.</FormErrorMessage>
           </FormControl>
 
@@ -173,7 +173,6 @@ export default function Home(props) {
 
           <FormControl isInvalid={formError.router} id="router" mb={3}>
             <FormLabel htmlFor="router">Decentralize Exchange Router Address:</FormLabel>
-
             <Select name="router" placeholder="-" onChange={handleOnChangeTokens}>
               {Array.isArray(routerList) &&
                 routerList.map((e, i) => (
@@ -220,7 +219,6 @@ export async function getStaticProps(context) {
   try {
     const data = await fs.readFile(path.join(process.cwd(), "public", "chains.json"));
     chains = JSON.parse(data);
-    console.log(chains);
   } catch (error) {}
 
   return {
