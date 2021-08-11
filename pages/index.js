@@ -178,7 +178,7 @@ export default function Home(props) {
             <FormErrorMessage>Please enter valid token address.</FormErrorMessage>
           </FormControl>
 
-          <FormControl isInvalid={formError.token} id="token" mb={3}>
+          <FormControl isInvalid={formError.token} id="token" mb={3} isDisabled={true}>
             <FormLabel htmlFor="token">Token Address:</FormLabel>
             <Input
               name="token"
@@ -190,7 +190,7 @@ export default function Home(props) {
             <FormErrorMessage>Invalid token address.</FormErrorMessage>
           </FormControl>
 
-          <FormControl isInvalid={formError.stable} id="stable" mb={3}>
+          <FormControl isInvalid={formError.stable} id="stable" mb={3} isDisabled={true}>
             <FormLabel htmlFor="stable">Stable Token Address:</FormLabel>
             <Input
               name="stable"
