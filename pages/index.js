@@ -10,10 +10,13 @@ import {
   Input,
   Select,
   AlertIcon,
+  FormHelperText,
 } from "@chakra-ui/react";
 import { useEffect, useState } from "react";
 import fs from "fs/promises";
 import path from "path";
+import FormAutoComplete from "../components/FormAutoComplete";
+import getRouterList from "../services/getRouterList";
 
 const initialValue = {
   chain: null,
@@ -31,6 +34,7 @@ export default function Home(props) {
   const [apiLoading, setApiLoading] = useState(false);
   const [apiFeedback, setApiFeedback] = useState({ show: false, isError: false, msg: "" });
   let countdownTimer = null;
+  const [routerList, setRouterList] = useState([]);
 
   const handleOnChange = ({ target: { name, value } }) => {
     setFormValues((prev) => ({ ...prev, [name]: value }));
@@ -97,11 +101,30 @@ export default function Home(props) {
     }, 1000);
   };
 
+  const handleSelectedChain = (item) => {
+    if (item.chainId && item.formId) {
+      setFormValues((prev) => ({ ...prev, [item.formId]: item.chainId }));
+      setFormError((prev) => ({ ...prev, [item.formId]: false }));
+    } else {
+      setFormError((prev) => ({ ...prev, [item.formId]: true }));
+    }
+  };
+
   useEffect(() => {
     return () => {
       countdownTimer && clearTimeout(countdownTimer);
     };
   }, [countdownTimer]);
+
+  useEffect(() => {
+    if (formValues.chain <= 0) return;
+
+    (async function () {
+      const _routerList = await getRouterList({ chainId: formValues.chain });
+
+      setRouterList(_routerList);
+    })();
+  }, [formValues.chain]);
 
   return (
     <Container centerContent>
@@ -109,20 +132,20 @@ export default function Home(props) {
         <Image src={"/xircus-animated.gif"} width={200} alt="XIRCUS" />
       </Box>
       <Box w={["100%", 400]} p={5} borderWidth="1px" borderRadius="lg">
-        <form onSubmit={handleSubmit}>
-          <FormControl id="chain" mb={3} isInvalid={formError.chain}>
-            <FormLabel htmlFor="chain">BLockchain</FormLabel>
-            <Select name="chain" placeholder="Select Chain" onChange={handleOnChange}>
-              {chains &&
-                Array.isArray(chains) &&
-                chains.map((e, i) => (
-                  <option key={`${e.networkId}_${i}`} value={e.name}>
-                    {e.name}
-                  </option>
-                ))}
-            </Select>
-            <FormErrorMessage>Please select Blockchain.</FormErrorMessage>
-          </FormControl>
+        <form onSubmit={handleSubmit} autoComplete="off">
+          <FormAutoComplete
+            id="chain"
+            options={chains}
+            renderItem={(item) => item.name}
+            renderKey={(item) => item.chainId}
+            onSelect={handleSelectedChain}
+            name="chain"
+            autoComplete="off"
+            label="EVM Chain Network"
+            placeholder="Select Chain"
+            control={{ mb: 4, isInvalid: formError.chain }}
+            errormsg="Please select Blockchain."
+          />
 
           <FormControl id="name" mb={3} isInvalid={formError.name}>
             <FormLabel htmlFor="name">Name</FormLabel>
@@ -148,9 +171,17 @@ export default function Home(props) {
             <FormErrorMessage>Invalid token address.</FormErrorMessage>
           </FormControl>
 
-          <FormControl isInvalid={formError.router} id="router" mb={3} isDisabled={true}>
+          <FormControl isInvalid={formError.router} id="router" mb={3}>
             <FormLabel htmlFor="router">Decentralize Exchange Router Address:</FormLabel>
-            <Input name="router" placeholder="0x00000" maxLength={42} onChange={handleOnChangeTokens} />
+
+            <Select name="router" placeholder="-" onChange={handleOnChangeTokens}>
+              {Array.isArray(routerList) &&
+                routerList.map((e, i) => (
+                  <option key={`${e.networkId}_${i}`} value={e.router}>
+                    {e.name}
+                  </option>
+                ))}
+            </Select>
             <FormErrorMessage>Invalid token address.</FormErrorMessage>
           </FormControl>
 
@@ -170,7 +201,7 @@ export default function Home(props) {
             loadingText="Please wait..."
             spinnerPlacement="start"
             width="full"
-            bgGradient="linear(to-r, #7928CA, #ffb100)"
+            bgGradient="linear(to-l, #8a2387, #e94057, #f27121)"
             color="white"
           >
             Add Token
