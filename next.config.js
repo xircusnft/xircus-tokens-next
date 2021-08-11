@@ -7,7 +7,7 @@ module.exports = (phase, { defaultConfig }) => {
       env: {
         HOST: "http://localhost:3000",
         ROUTER_EXCHANGE: "https://api.xircus.app/exchanges",
-        MONGODB_DB: "tokenlister_test",
+        MONGODB_DB: "tokenlister_dev",
         MONGODB_URI: "mongodb+srv://jmxircus:hamL5J0ZyMDkDgrH@tokenlister.fpl5d.mongodb.net",
       },
     };
