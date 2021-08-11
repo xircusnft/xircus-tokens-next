@@ -16,7 +16,7 @@ import {
   useColorModeValue,
   useDisclosure,
 } from "@chakra-ui/react";
-import { useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 
 const FormAutoComplete = ({
   id,
@@ -34,6 +34,7 @@ const FormAutoComplete = ({
   tag,
   onSelect,
   errormsg,
+  clearValue,
   ...rest
 }) => {
   const inputRef = useRef();
@@ -54,6 +55,10 @@ const FormAutoComplete = ({
     setSearch(renderItem(item));
     onSelect && onSelect({ ...item, formId: id });
   };
+
+  useEffect(() => {
+    setSearch("");
+  }, [clearValue]);
 
   return (
     <Popover id placement="bottom-start" closeOnBlur closeOnEsc isOpen={isOpen} initialFocusRef={inputRef}>

@@ -20,12 +20,12 @@ import getRouterList from "../services/getRouterList";
 import validateToken from "../util/validateToken";
 
 const initialValue = {
-  chain: null,
-  name: null,
-  lp: null,
-  token: null,
-  stable: null,
-  router: null,
+  chain: "",
+  name: "",
+  lp: "",
+  token: "",
+  stable: "",
+  router: "",
 };
 
 export default function Home(props) {
@@ -36,6 +36,7 @@ export default function Home(props) {
   const [apiFeedback, setApiFeedback] = useState({ show: false, isError: false, msg: "" });
   let countdownTimer = null;
   const [routerList, setRouterList] = useState([]);
+  const [clearChainInput, setclearChainInput] = useState(false);
 
   const handleOnChange = ({ target: { name, value } }) => {
     setFormValues((prev) => ({ ...prev, [name]: value }));
@@ -61,6 +62,12 @@ export default function Home(props) {
     setApiFeedback({ show: false, isError: false, msg: "" });
   };
 
+  const resetFormValues = () => {
+    setFormValues(initialValue);
+    setFormError(initialValue);
+    setclearChainInput((prev) => !prev);
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     resetApiFeedback();
@@ -71,30 +78,21 @@ export default function Home(props) {
 
     let isValidData = true;
     Object.entries(formError).forEach(([key, value]) => {
-      if (value === true || value === null) {
+      if (value === true || value === "") {
         isValidData = false;
         setFormError((prev) => ({ ...prev, [key]: true }));
       }
     });
 
     if (isValidData) {
-      await fetch(`${process.env.HOST}/api/token`, {
+      const response = await fetch(`${process.env.HOST}/api/token`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(formValues),
-      })
-        .then((res) => {
-          if (!res.ok) {
-            throw res;
-          }
-          return res.json();
-        })
-        .then((data) => setApiFeedback({ show: true, isError: false, msg: "Token successfully added." }))
-        .catch((err) => {
-          const errmsg = err.json().then((er) => {
-            setApiFeedback({ show: true, isError: true, msg: er.message ?? "Adding tokens failed." });
-          });
-        });
+      });
+      const result = await response.json();
+
+      setApiFeedback({ show: true, isError: !response.ok, msg: result.message });
     } else {
       setApiLoading(false);
       return;
@@ -103,7 +101,7 @@ export default function Home(props) {
     countdownTimer = setTimeout(() => {
       setApiLoading(false);
       resetApiFeedback();
-    }, 1000);
+    }, 1500);
   };
 
   const handleSelectedChain = (item) => {
@@ -128,6 +126,7 @@ export default function Home(props) {
       const _routerList = await getRouterList({ chainId: formValues.chain });
 
       setRouterList(_routerList);
+      setFormValues((prev) => ({ ...prev, router: "" }));
     })();
   }, [formValues.chain]);
 
@@ -150,35 +149,60 @@ export default function Home(props) {
             placeholder="Select Chain"
             control={{ mb: 4, isInvalid: formError.chain }}
             errormsg="Please select Blockchain."
+            clearValue={clearChainInput}
           />
 
           <FormControl id="name" mb={3} isInvalid={formError.name}>
             <FormLabel htmlFor="name">Name</FormLabel>
-            <Input name="name" maxLength={255} onChange={handleOnChange} placeholder="e.g Market-BUSD PancakeSwap" />
+            <Input
+              name="name"
+              maxLength={255}
+              onChange={handleOnChange}
+              placeholder="e.g Market-BUSD PancakeSwap"
+              value={formValues.name}
+            />
             <FormErrorMessage>Please enter name.</FormErrorMessage>
           </FormControl>
 
           <FormControl isInvalid={formError.lp} id="lp" mb={3}>
             <FormLabel htmlFor="lp">Liquidity Pair Token Address:</FormLabel>
-            <Input name="lp" placeholder="0x00000" maxLength={42} onChange={handleOnChangeTokens} />
+            <Input
+              name="lp"
+              placeholder="0x00000"
+              maxLength={42}
+              onChange={handleOnChangeTokens}
+              value={formValues.lp}
+            />
             <FormErrorMessage>Please enter valid token address.</FormErrorMessage>
           </FormControl>
 
-          <FormControl isInvalid={formError.token} id="token" mb={3} isDisabled={true}>
+          <FormControl isInvalid={formError.token} id="token" mb={3}>
             <FormLabel htmlFor="token">Token Address:</FormLabel>
-            <Input name="token" placeholder="0x00000" maxLength={42} onChange={handleOnChangeTokens} />
+            <Input
+              name="token"
+              placeholder="0x00000"
+              maxLength={42}
+              onChange={handleOnChangeTokens}
+              value={formValues.token}
+            />
             <FormErrorMessage>Invalid token address.</FormErrorMessage>
           </FormControl>
 
-          <FormControl isInvalid={formError.stable} id="stable" mb={3} isDisabled={true}>
+          <FormControl isInvalid={formError.stable} id="stable" mb={3}>
             <FormLabel htmlFor="stable">Stable Token Address:</FormLabel>
-            <Input name="stable" placeholder="0x00000" maxLength={42} onChange={handleOnChangeTokens} />
+            <Input
+              name="stable"
+              placeholder="0x00000"
+              maxLength={42}
+              onChange={handleOnChangeTokens}
+              value={formValues.stable}
+            />
             <FormErrorMessage>Invalid token address.</FormErrorMessage>
           </FormControl>
 
-          <FormControl isInvalid={formError.router} id="router" mb={3}>
+          <FormControl isInvalid={formError.router} id="router" mb={3} isDisabled={formValues.chain === ""}>
             <FormLabel htmlFor="router">Decentralize Exchange Router Address:</FormLabel>
-            <Select name="router" placeholder="-" onChange={handleOnChangeTokens}>
+            <Select name="router" placeholder="-" value={formValues.router} onChange={handleOnChangeTokens}>
               {Array.isArray(routerList) &&
                 routerList.map((e, i) => (
                   <option key={`${e.networkId}_${i}`} value={e.router}>
