@@ -10,10 +10,10 @@ import {
   Input,
   Select,
   AlertIcon,
-} from '@chakra-ui/react';
-import { useEffect, useState } from 'react';
-import fs from 'fs/promises';
-import path from 'path';
+} from "@chakra-ui/react";
+import { useEffect, useState } from "react";
+import fs from "fs/promises";
+import path from "path";
 
 const initialValue = {
   chain: null,
@@ -29,13 +29,13 @@ export default function Home(props) {
   const [formValues, setFormValues] = useState(initialValue);
   const [formError, setFormError] = useState(initialValue);
   const [apiLoading, setApiLoading] = useState(false);
-  const [apiFeedback, setApiFeedback] = useState({ show: false, isError: false, msg: '' });
+  const [apiFeedback, setApiFeedback] = useState({ show: false, isError: false, msg: "" });
   let countdownTimer = null;
 
   const handleOnChange = ({ target: { name, value } }) => {
     setFormValues((prev) => ({ ...prev, [name]: value }));
 
-    if (name == 'name' && value.length <= 0) {
+    if (name == "name" && value.length <= 0) {
       setFormError((prev) => ({ ...prev, [name]: true }));
     } else {
       setFormError((prev) => ({ ...prev, [name]: false }));
@@ -45,7 +45,7 @@ export default function Home(props) {
   const handleOnChangeTokens = ({ target: { name, value } }) => {
     setFormValues((prev) => ({ ...prev, [name]: value }));
 
-    if (value.startsWith('0x') && value.length == 42) {
+    if (value.startsWith("0x") && value.length == 42) {
       setFormError((prev) => ({ ...prev, [name]: false }));
     } else {
       setFormError((prev) => ({ ...prev, [name]: true }));
@@ -53,7 +53,7 @@ export default function Home(props) {
   };
 
   const resetApiFeedback = () => {
-    setApiFeedback({ show: false, isError: false, msg: '' });
+    setApiFeedback({ show: false, isError: false, msg: "" });
   };
 
   const handleSubmit = async (e) => {
@@ -74,18 +74,18 @@ export default function Home(props) {
 
     if (isValidData) {
       await fetch(`${process.env.HOST}/api/token`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify(formValues),
       })
         .then((res) => {
           if (!res.ok) {
-            throw new Error(res.statusText ?? 'Adding tokens failed.');
+            throw new Error(res.statusText ?? "Adding tokens failed.");
           }
           return res.json();
         })
-        .then((data) => setApiFeedback({ show: true, isError: false, msg: 'Token successfully added.' }))
-        .catch((err) => setApiFeedback({ show: true, isError: true, msg: err.message ?? 'Adding tokens failed.' }));
+        .then((data) => setApiFeedback({ show: true, isError: false, msg: "Token successfully added." }))
+        .catch((err) => setApiFeedback({ show: true, isError: true, msg: err.message ?? "Adding tokens failed." }));
     } else {
       setApiLoading(false);
       return;
@@ -106,13 +106,13 @@ export default function Home(props) {
   return (
     <Container centerContent>
       <Box mt={[5, 100]}>
-        <Image src={'/xircus-animated.gif'} width={200} alt='XIRCUS' />
+        <Image src={"/xircus-animated.gif"} width={200} alt="XIRCUS" />
       </Box>
-      <Box w={['100%', 400]} p={5} borderWidth='1px' borderRadius='lg'>
+      <Box w={["100%", 400]} p={5} borderWidth="1px" borderRadius="lg">
         <form onSubmit={handleSubmit}>
-          <FormControl id='chain' mb={3} isInvalid={formError.chain}>
-            <FormLabel htmlFor='chain'>BLockchain</FormLabel>
-            <Select name='chain' placeholder='Select Chain' onChange={handleOnChange}>
+          <FormControl id="chain" mb={3} isInvalid={formError.chain}>
+            <FormLabel htmlFor="chain">BLockchain</FormLabel>
+            <Select name="chain" placeholder="Select Chain" onChange={handleOnChange}>
               {chains &&
                 Array.isArray(chains) &&
                 chains.map((e, i) => (
@@ -124,54 +124,54 @@ export default function Home(props) {
             <FormErrorMessage>Please select Blockchain.</FormErrorMessage>
           </FormControl>
 
-          <FormControl id='name' mb={3} isInvalid={formError.name}>
-            <FormLabel htmlFor='name'>Name</FormLabel>
-            <Input name='name' maxLength={255} onChange={handleOnChange} />
+          <FormControl id="name" mb={3} isInvalid={formError.name}>
+            <FormLabel htmlFor="name">Name</FormLabel>
+            <Input name="name" maxLength={255} onChange={handleOnChange} />
             <FormErrorMessage>Please enter name.</FormErrorMessage>
           </FormControl>
 
-          <FormControl isInvalid={formError.lp} id='lp' mb={3}>
-            <FormLabel htmlFor='lp'>Liquidity Pair Token Address:</FormLabel>
-            <Input name='lp' placeholder='0x00000' maxLength={42} onChange={handleOnChangeTokens} />
+          <FormControl isInvalid={formError.lp} id="lp" mb={3}>
+            <FormLabel htmlFor="lp">Liquidity Pair Token Address:</FormLabel>
+            <Input name="lp" placeholder="0x00000" maxLength={42} onChange={handleOnChangeTokens} />
             <FormErrorMessage>Please enter valid token address.</FormErrorMessage>
           </FormControl>
 
-          <FormControl isInvalid={formError.token} id='token' mb={3} isDisabled={true}>
-            <FormLabel htmlFor='token'>Token Address:</FormLabel>
-            <Input name='token' placeholder='0x00000' maxLength={42} onChange={handleOnChangeTokens} />
+          <FormControl isInvalid={formError.token} id="token" mb={3} isDisabled={true}>
+            <FormLabel htmlFor="token">Token Address:</FormLabel>
+            <Input name="token" placeholder="0x00000" maxLength={42} onChange={handleOnChangeTokens} />
             <FormErrorMessage>Invalid token address.</FormErrorMessage>
           </FormControl>
 
-          <FormControl isInvalid={formError.stable} id='stable' mb={3} isDisabled={true}>
-            <FormLabel htmlFor='stable'>Stable Token Address:</FormLabel>
-            <Input name='stable' placeholder='0x00000' maxLength={42} onChange={handleOnChangeTokens} />
+          <FormControl isInvalid={formError.stable} id="stable" mb={3} isDisabled={true}>
+            <FormLabel htmlFor="stable">Stable Token Address:</FormLabel>
+            <Input name="stable" placeholder="0x00000" maxLength={42} onChange={handleOnChangeTokens} />
             <FormErrorMessage>Invalid token address.</FormErrorMessage>
           </FormControl>
 
-          <FormControl isInvalid={formError.router} id='router' mb={3} isDisabled={true}>
-            <FormLabel htmlFor='router'>Decentralize Exchange Router Address:</FormLabel>
-            <Input name='router' placeholder='0x00000' maxLength={42} onChange={handleOnChangeTokens} />
+          <FormControl isInvalid={formError.router} id="router" mb={3} isDisabled={true}>
+            <FormLabel htmlFor="router">Decentralize Exchange Router Address:</FormLabel>
+            <Input name="router" placeholder="0x00000" maxLength={42} onChange={handleOnChangeTokens} />
             <FormErrorMessage>Invalid token address.</FormErrorMessage>
           </FormControl>
 
           {apiFeedback.show && (
-            <Alert status={apiFeedback.isError ? 'error' : 'success'}>
+            <Alert status={apiFeedback.isError ? "error" : "success"}>
               <AlertIcon />
               {apiFeedback.msg}
             </Alert>
           )}
 
           <Button
-            type='submit'
+            type="submit"
             mt={3}
-            colorScheme='orange'
-            variant='solid'
+            colorScheme="orange"
+            variant="solid"
             isLoading={apiLoading}
-            loadingText='Please wait...'
-            spinnerPlacement='start'
-            width='full'
-            bgGradient='linear(to-r, #7928CA, #ffb100)'
-            color='white'
+            loadingText="Please wait..."
+            spinnerPlacement="start"
+            width="full"
+            bgGradient="linear(to-r, #7928CA, #ffb100)"
+            color="white"
           >
             Add Token
           </Button>
@@ -187,7 +187,7 @@ export async function getStaticProps(context) {
   let chains = [];
 
   try {
-    const data = await fs.readFile(path.join(process.cwd(), 'public', 'chains.json'));
+    const data = await fs.readFile(path.join(process.cwd(), "public", "chains.json"));
     chains = JSON.parse(data);
     console.log(chains);
   } catch (error) {}
