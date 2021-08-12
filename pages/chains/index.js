@@ -7,7 +7,7 @@ function Chains({ chains }) {
 
   const handleSelected = (cid) => {
     console.log(cid);
-    router.push("/chains/" + encodeURIComponent(cid));
+    router.push(`/chains/${encodeURIComponent(cid)}`);
   };
 
   return (
@@ -16,7 +16,7 @@ function Chains({ chains }) {
         List Of Chains
       </Heading>
       <Box my={2}>
-        <Input placeholder="Search Blockchain"></Input>
+        <Input placeholder="Search Blockchain" />
       </Box>
       <Box maxHeight="80vh" overflowY="scroll">
         {" "}
