@@ -77,8 +77,10 @@ export default function Home(props) {
     // const isInvalidData = Object.values(formError).some((value) => value === true || value === null);
 
     let isValidData = true;
-    Object.entries(formError).forEach(([key, value]) => {
-      if (value === true || value === "") {
+    const validateOnly = ["chain", "name", "lp", "router"];
+    validateOnly.forEach((key) => {
+      console.log(`key: ${key} value: ${formValues[key]}`);
+      if (formValues[key] === true || formValues[key] === "") {
         isValidData = false;
         setFormError((prev) => ({ ...prev, [key]: true }));
       }

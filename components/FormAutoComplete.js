@@ -95,7 +95,6 @@ const FormAutoComplete = ({
                 mr={2}
                 onClick={() => handleSelect(r)}
                 key={renderKey(r)}
-                width="full"
                 sx={{ textAlign: "start" }}
               >
                 {renderItem(r)}
