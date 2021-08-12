@@ -17,11 +17,8 @@ export default async function getPairList(_chainId) {
       .find(query, { projection: { _id: 0 } })
       .toArray();
 
-    console.log(query);
-    console.log(pairs);
     return pairs;
   } catch (error) {
-    console.error(error);
     return [];
   }
 }
