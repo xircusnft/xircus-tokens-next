@@ -7,7 +7,6 @@ module.exports = (phase, { defaultConfig }) => {
       env: {
         HOST: "http://localhost:3000",
         ROUTER_EXCHANGE: "https://api.xircus.app/exchanges",
-        MONGODB_DB: "tokenlister_dev",
         MONGODB_URI:
           "mongodb+srv://jmxircus:hamL5J0ZyMDkDgrH@tokenlister.fpl5d.mongodb.net/TokenLister_dev?retryWrites=true&w=majority",
       },
@@ -19,7 +18,6 @@ module.exports = (phase, { defaultConfig }) => {
     env: {
       HOST: "https://xircus-tokens-next.vercel.app",
       ROUTER_EXCHANGE: "https://api.xircus.app/exchanges",
-      MONGODB_DB: "tokenlister",
       MONGODB_URI:
         "mongodb+srv://jmxircus:hamL5J0ZyMDkDgrH@tokenlister.fpl5d.mongodb.net/TokenLister?retryWrites=true&w=majority",
     },
