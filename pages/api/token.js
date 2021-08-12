@@ -4,10 +4,10 @@ import validateToken from "../../util/validateToken";
 export default async function handler(req, res) {
   if (req.method === "POST") {
     try {
-      const { chain, lp, token, stable, router } = req.body;
+      const { chain, lp, router } = req.body;
       if (!chain || String(chain).length <= 0) throw new Error("Invalid EVM Chain Network ID");
 
-      if (!validateToken(lp) || !validateToken(token) || !validateToken(stable) || !validateToken(router)) {
+      if (!validateToken(lp) || !validateToken(router)) {
         throw new Error("One of the provided token address is invalid.");
       }
 
