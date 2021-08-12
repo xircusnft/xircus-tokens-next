@@ -1,10 +1,17 @@
-import getPairList from "../../../services/getPairList";
+import Token from "../../../models/Token";
+import dbConnect from "../../../util/dbConnect";
 
 export default async function handler(req, res) {
-  const { query } = req;
-  let result = { status: true, data: [] };
+  const { query, method } = req;
 
-  result.data = await getPairList(query.chainId);
+  await dbConnect();
 
-  res.status(200).json(result);
+  if (method === "GET") {
+    try {
+      const list = await Token.find({ chainId: query.chainId });
+      res.status(201).json({ status: true, data: list });
+    } catch (error) {
+      res.status(400).json({ status: false, data: [] });
+    }
+  }
 }

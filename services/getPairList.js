@@ -1,24 +1,19 @@
-import { connectToDatabase } from "../util/mongodb";
+// Same functionality with /api/pairs/[chainId].js
+// Having issue on passing the list of records.
+// vercel discuttion: https://github.com/vercel/next.js/discussions/27555
+
+import dbConnect from "../util/dbConnect";
+import Token from "../models/Token";
 
 export default async function getPairList(_chainId) {
-  // if got an error still return empty array, log sa server na lang ung error
-
-  if (!_chainId || (_chainId && String(_chainId).length <= 0)) return [];
-
-  let query = { chain: { $in: [_chainId, Number(_chainId)] } };
-
-  // just in case the chainId is pure string
-  if (isNaN(_chainId)) query = { chain: _chainId };
+  await dbConnect();
 
   try {
-    const { db } = await connectToDatabase();
-    const pairs = await db
-      .collection("tokens")
-      .find(query, { projection: { _id: 0 } })
-      .limit(500)
-      .toArray();
+    const list = await Token.find({ chainId: _chainId }).lean();
 
-    return pairs;
+    // Getting error when passing the list directly (consumed by /pages/chains/[chainId])
+    // https://github.com/vercel/next.js/issues/11993
+    return JSON.parse(JSON.stringify(list));
   } catch (error) {
     return [];
   }

@@ -1,31 +1,21 @@
-import { connectToDatabase } from "../../util/mongodb";
-import validateToken from "../../util/validateToken";
+import Token from "../../models/Token";
+import dbConnect from "../../util/dbConnect";
 
 export default async function handler(req, res) {
-  if (req.method === "POST") {
-    try {
-      const { chain, lp, router } = req.body;
-      if (!chain || String(chain).length <= 0) throw new Error("Invalid EVM Chain Network ID");
+  await dbConnect();
 
-      if (!validateToken(lp) || !validateToken(router)) {
-        throw new Error("One of the provided token address is invalid.");
+  switch (req.method) {
+    case "POST":
+      try {
+        const createdToken = await Token.create(req.body);
+        res.status(201).json({ status: true, message: "Token successfully added.", data: createdToken });
+      } catch (error) {
+        res.status(400).json({ status: false, message: "Failed adding token.", errmsg: error.message });
       }
+      break;
 
-      const { db } = await connectToDatabase();
-
-      const tokens = db.collection("tokens");
-
-      await tokens.insertOne(req.body);
-      res.status(201).json({ status: true, message: "Token successfully added.", data: req.body });
-    } catch (error) {
-      console.error(error);
-      res.status(400).json({ status: false, message: error.message, data: req.body });
-    }
-
-    // For testing only
-    // res.status(201).json({ status: true, message: "Saved", data: req.body });
-    // res.status(400).json({ status: true, message: "Failed", data: req.body });
-  } else {
-    res.status(200).json({ post: "no" });
+    default:
+      res.status(400).json({ status: false });
+      break;
   }
 }

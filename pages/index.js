@@ -20,9 +20,9 @@ import getRouterList from "../services/getRouterList";
 import validateToken from "../util/validateToken";
 
 const initialValue = {
-  chain: "",
+  chainId: "",
   name: "",
-  lp: "",
+  pair: "",
   token: "",
   stable: "",
   router: "",
@@ -77,7 +77,7 @@ export default function Home(props) {
     // const isInvalidData = Object.values(formError).some((value) => value === true || value === null);
 
     let isValidData = true;
-    const validateOnly = ["chain", "name", "lp", "router"];
+    const validateOnly = ["chainId", "name", "pair"];
     validateOnly.forEach((key) => {
       console.log(`key: ${key} value: ${formValues[key]}`);
       if (formValues[key] === true || formValues[key] === "") {
@@ -124,15 +124,15 @@ export default function Home(props) {
   }, [countdownTimer]);
 
   useEffect(() => {
-    if (formValues.chain <= 0) return;
+    if (formValues.chainId <= 0) return;
 
     (async function () {
-      const _routerList = await getRouterList({ chainId: formValues.chain });
+      const _routerList = await getRouterList({ chainId: formValues.chainId });
 
       setRouterList(_routerList);
       setFormValues((prev) => ({ ...prev, router: "" }));
     })();
-  }, [formValues.chain]);
+  }, [formValues.chainId]);
 
   return (
     <Container centerContent>
@@ -142,16 +142,16 @@ export default function Home(props) {
       <Box w={["100%", 400]} p={5} borderWidth="1px" borderRadius="lg" mb={100}>
         <form onSubmit={handleSubmit} autoComplete="off">
           <FormAutoComplete
-            id="chain"
+            id="chainId"
             options={chains}
             renderItem={(item) => item.name}
             renderKey={(item) => item.chainId}
             onSelect={handleSelectedChain}
-            name="chain"
+            name="chainId"
             autoComplete="off"
             label="EVM Chain Network"
             placeholder="Select Chain"
-            control={{ mb: 4, isInvalid: formError.chain }}
+            control={{ mb: 4, isInvalid: formError.chainId }}
             errormsg="Please select Blockchain."
             clearValue={clearChainInput}
           />
@@ -168,14 +168,14 @@ export default function Home(props) {
             <FormErrorMessage>Please enter name.</FormErrorMessage>
           </FormControl>
 
-          <FormControl isInvalid={formError.lp} id="lp" mb={3}>
-            <FormLabel htmlFor="lp">Liquidity Pair Token Address:</FormLabel>
+          <FormControl isInvalid={formError.pair} id="pair" mb={3}>
+            <FormLabel htmlFor="pair">Liquidity Pair Token Address:</FormLabel>
             <Input
-              name="lp"
+              name="pair"
               placeholder="0x00000"
               maxLength={42}
               onChange={handleOnChangeTokens}
-              value={formValues.lp}
+              value={formValues.pair}
             />
             <FormErrorMessage>Please enter valid token address.</FormErrorMessage>
           </FormControl>
@@ -204,7 +204,7 @@ export default function Home(props) {
             <FormErrorMessage>Invalid token address.</FormErrorMessage>
           </FormControl>
 
-          <FormControl isInvalid={formError.router} id="router" mb={3} isDisabled={formValues.chain === ""}>
+          <FormControl isInvalid={formError.router} id="router" mb={3} isDisabled={formValues.chainId === ""}>
             <FormLabel htmlFor="router">Decentralize Exchange Router Address:</FormLabel>
             <Select name="router" placeholder="-" value={formValues.router} onChange={handleOnChangeTokens}>
               {Array.isArray(routerList) &&

@@ -18,7 +18,7 @@ function ChainDetails({ tokenList }) {
             "Decentralize Exchange Router Address",
           ]}
           body={tokenList}
-          renderData={["name", "lp", "token", "stable", "router"]}
+          renderData={["name", "pair", "token", "stable", "router"]}
         />
       ),
     [tokenList]
