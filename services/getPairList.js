@@ -15,6 +15,7 @@ export default async function getPairList(_chainId) {
     const pairs = await db
       .collection("tokens")
       .find(query, { projection: { _id: 0 } })
+      .limit(500)
       .toArray();
 
     return pairs;
