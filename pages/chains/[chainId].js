@@ -1,43 +1,33 @@
-import { Box, Container, Table, Tbody, Td, Th, Thead, Tr } from "@chakra-ui/react";
+import { Box, Table, Tbody, Td, Th, Thead, Tr } from "@chakra-ui/react";
+import { useCallback } from "react";
+import SimpleTable from "../../components/SimpleTable";
 import getPairList from "../../services/getPairList";
 
 function ChainDetails({ tokenList }) {
-  let output = <></>;
-
-  if (tokenList.length <= 0) output = <Box>No associated token yet.</Box>;
-
-  if (Array.isArray(tokenList) && tokenList.length > 0) {
-    output = (
-      <Table variant="simple">
-        <Thead>
-          <Tr>
-            <Th>#</Th>
-            <Th>Name</Th>
-            <Th>Liquidity Pair Token Address</Th>
-            <Th>Token Address</Th>
-            <Th>Stable Token Address</Th>
-            <Th>Decentralize Exchange Router Address</Th>
-          </Tr>
-        </Thead>
-        <Tbody>
-          {tokenList.map((item, index) => (
-            <Tr key={index}>
-              <Td>{index + 1}</Td>
-              <Td>{item.name}</Td>
-              <Td>{item.lp}</Td>
-              <Td>{item.token}</Td>
-              <Td>{item.stable}</Td>
-              <Td>{item.router}</Td>
-            </Tr>
-          ))}
-        </Tbody>
-      </Table>
-    );
-  }
+  const renderEmpty = useCallback(() => tokenList.length == 0 && <Box>No associated token yet.</Box>, [tokenList]);
+  const renderTable = useCallback(
+    () =>
+      tokenList.length > 0 && (
+        <SimpleTable
+          header={[
+            "#",
+            "Name",
+            "Liquidity Pair Token Address",
+            "Token Address",
+            "Stable Token Address",
+            "Decentralize Exchange Router Address",
+          ]}
+          body={tokenList}
+          renderData={["name", "lp", "token", "stable", "router"]}
+        />
+      ),
+    [tokenList]
+  );
 
   return (
     <Box m={5} overflowX="scroll" p={5}>
-      {output}
+      {renderEmpty()}
+      {renderTable()}
     </Box>
   );
 }
