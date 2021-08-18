@@ -7,4 +7,4 @@ const ExchangeSchema = new mongoose.Schema({
   router: { type: String, required: true },
 });
 
-export default mongoose.models.Token || mongoose.model("Exchange", ExchangeSchema);
+export default mongoose.models.Exchange || mongoose.model("Exchange", ExchangeSchema);
