@@ -2,11 +2,11 @@ import { Box, Container, Heading, Button, HStack, Text, useToast } from "@chakra
 import { useState } from "react";
 
 export default function Migrate() {
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState({ isLoading: false, selectedBtn: "" });
   const toast = useToast();
 
   const handleClick = async (targetFile) => {
-    setLoading(true);
+    setLoading({ isLoading: true, selectedBtn: targetFile });
 
     const reply = await fetch(`${process.env.HOST}/api/migrate?targetFile=${targetFile}`);
 
@@ -15,7 +15,7 @@ export default function Migrate() {
 
     toast({
       title: reply.ok ? "Successfull" : "Failed",
-      description: reply.ok ? "Records successfully updated." : "Please check console for the error.",
+      description: reply.ok ? `Successfully updated ${targetFile} record.` : "Please check console for the error.",
       status: reply.ok ? "success" : "error",
       duration: 9000,
       isClosable: true,
@@ -25,7 +25,7 @@ export default function Migrate() {
     if (reply.ok) {
     }
 
-    setLoading(false);
+    setLoading({ isLoading: false, selectedBtn: "" });
   };
 
   return (
@@ -35,15 +35,28 @@ export default function Migrate() {
       </Heading>
       <Box my={2}>
         <HStack spacing="24px">
-          <Button colorScheme="teal" size="lg" onClick={handleClick.bind(this, "exchanges")} isDisabled={loading}>
+          <Button
+            colorScheme="teal"
+            size="lg"
+            onClick={handleClick.bind(this, "exchanges")}
+            isDisabled={loading.isLoading}
+            isLoading={loading.isLoading && loading.selectedBtn == "exchanges"}
+            loadingText="Please wait..."
+          >
             Exchanges
           </Button>
-          <Button colorScheme="teal" size="lg" onClick={handleClick.bind(this, "exchanges")} isDisabled={loading}>
+          <Button
+            colorScheme="teal"
+            size="lg"
+            onClick={handleClick.bind(this, "pairs")}
+            isDisabled={loading.isLoading}
+            isLoading={loading.isLoading && loading.selectedBtn == "pairs"}
+            loadingText="Please wait..."
+          >
             Pairs
           </Button>
         </HStack>
       </Box>
-      <Box>{loading && <Text>Please wait...</Text>}</Box>
     </Container>
   );
 }
