@@ -1,0 +1,29 @@
+[
+  {
+    "chainId": 56,
+    "name": "XMT-BUSD PancakeSwap",
+    "address": "0x97081c5ab62763d0c8395fded6ff899e8f33bcf8",
+    "token": "0x4b3ca8b6a4156b2bd39d1b5f517cb360e8b525b7",
+    "router": "0x10ED43C718714eb63d5aA57B78B54704E256024E",
+    "usd": "0xe9e7cea3dedca5984780bafc599bd69add087d56",
+    "__v": 0
+  },
+  {
+    "chainId": 97,
+    "name": "XMT-BUSD PancakeSwap",
+    "address": "0xbFfdD23F73b811428a776e2b6358157B03bdd70E",
+    "token": "0x488934842cb9df34ae009a3edb5d1755f58a20ac",
+    "router": "0xD99D1c33F9fC3444f8101754aBC46c52416550D1",
+    "usd": "0x8301f2213c0eed49a7e28ae4c3e91722919b8b47",
+    "__v": 0
+  },
+  {
+    "chainId": 137,
+    "name": "XMT-USDC SushiSwap",
+    "address": "0x0147045192973fcce197e3da1e7116bddfa21f6a",
+    "token": "0xa1ab4546fcb0167752c1b4b80646af3acfbb49f8",
+    "router": "0x1b02dA8Cb0d097eB8D57A175b88c7D8b47997506",
+    "usd": "0x2791bca1f2de4661ed88a30c99a7a9449aa84174",
+    "__v": 0
+  }
+]

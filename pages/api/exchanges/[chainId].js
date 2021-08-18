@@ -1,4 +1,4 @@
-import Pair from "../../../models/Pair";
+import Exchange from "../../../models/Exchange";
 import dbConnect from "../../../util/dbConnect";
 
 export default async function handler(req, res) {
@@ -9,7 +9,7 @@ export default async function handler(req, res) {
   switch (method) {
     case "GET":
       try {
-        const list = await Pair.find({ chainId: query.chainId }).sort({ name: 1 });
+        const list = await Exchange.find({ chainId: query.chainId }).sort({ name: -1 });
         res.status(201).json({ status: true, data: list });
       } catch (error) {
         res.status(400).json({ status: false, data: [] });
