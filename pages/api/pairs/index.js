@@ -9,12 +9,15 @@ export default async function handler(req, res) {
   switch (method) {
     case "GET":
       try {
-        const list = await Pair.find({ chainId: query.chainId }).sort({ name: 1 });
-        res.status(201).json({ status: true, data: list });
+        const _query = query?.chainId ? { chainId: query.chainId } : {};
+
+        const list = await Pair.find(_query).sort({ chainId: 1, name: 1 });
+
+        res.status(200).json({ status: true, data: list });
       } catch (error) {
+        console.error(error);
         res.status(400).json({ status: false, data: [] });
       }
-
       break;
 
     default:
