@@ -44,9 +44,11 @@ export default function Home(props) {
   const [feedback, setFeedback] = useState({ show: false, isError: false, msg: "" });
   const [routers, setRouters] = useState([]);
   const [clearChainInput, setclearChainInput] = useState(false);
+  const [clearTokenInput, setClearTokenInput] = useState(false);
   const [token, setToken] = useState(false);
   const [stable, setStable] = useState(false);
   const [chain, setChain] = useState(false);
+  const [currencies, setCurrencies] = useState(false)
   const toast = useToast();
 
   const web3 = useMemo(() => {
@@ -69,6 +71,7 @@ export default function Home(props) {
   };
 
   const handleOnChangeTokens = ({ target: { name, value } }) => {
+    console.log("TOKEN", value)
     setForm((prev) => ({ ...prev, [name]: value }));
     if (validateToken(value)) {
       setFormError((prev) => ({ ...prev, [name]: false }));
@@ -165,7 +168,27 @@ export default function Home(props) {
     }
   };
 
+  const getCurrencies = async(chainId) => {
+    const res = await fetch(`https://api.xircus.app/currencies?chainId=${form.chainId}`, {
+      method: "GET",
+    })
+    const currencies = await res.json()
+    setCurrencies(currencies)
+  }
+
+  const handleSelectedToken = (item) => {
+    console.log("ITEMS", item)
+    if (item.chainId && item.formId) {
+      setToken(item);
+      setForm((prev) => ({ ...prev, [item.formId]: item.address }));
+      setFormError((prev) => ({ ...prev, [item.formId]: false }));
+    } else {
+      setFormError((prev) => ({ ...prev, [item.formId]: true }));
+    }
+  };
+
   useEffect(() => {
+    getCurrencies()
     if (form.chainId) {
       getRouters(form.chainId);
     }
@@ -234,6 +257,21 @@ export default function Home(props) {
             />
             <FormErrorMessage>Please enter name.</FormErrorMessage>
           </FormControl>
+
+          <FormAutoComplete
+            id="token"
+            options={currencies.currencies}
+            renderItem={(item) => item.name}
+            renderKey={(item) => item.chainId}
+            onSelect={handleSelectedToken}
+            name="token"
+            autoComplete="off"
+            label="Token"
+            placeholder="Select Token"
+            control={{ mb: 4, isInvalid: formError.chainId }}
+            errormsg="Please select a blockchain"
+            clearValue={clearChainInput}
+          />
 
           <FormControl isInvalid={formError.token} id="token" mb={3} isDisabled>
             <FormLabel htmlFor="token">Token Address: {token && token.name}</FormLabel>
